@@ -101,3 +101,143 @@ public class Main { public static void main(String[] args) {
 
     }
 }
+
+
+v.2
+import java.util.Scanner;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+
+        // Configuración inicial
+        System.out.println("Selecciona el tamaño del mapa (ejemplo: 10x10)");
+        System.out.print("Columnas: ");
+        int columnas = scanner.nextInt();
+        System.out.print("Filas: ");
+        int filas = scanner.nextInt();
+
+        int[][] mapa = new int[filas][columnas];
+        boolean[][] disparos = new boolean[filas][columnas];
+
+        System.out.print("Indica cuántos barcos quieres: ");
+        int numBarcos = scanner.nextInt();
+        System.out.print("Indica el número máximo de disparos: ");
+        int maxDisparos = scanner.nextInt();
+
+        // Generar barcos
+        for (int i = 0; i < numBarcos; i++) {
+            boolean colocado = false;
+            while (!colocado) {
+                int posX = random.nextInt(filas);
+                int posY = random.nextInt(columnas);
+                int direccion = random.nextInt(2); // 0 = horizontal, 1 = vertical
+                int tamanoBarco = random.nextInt(2, Math.min(filas, columnas) / 2 + 1);
+
+                boolean puedeColocar = true;
+                for (int j = 0; j < tamanoBarco; j++) {
+                    int x = direccion == 0 ? posX : posX + j;
+                    int y = direccion == 0 ? posY + j : posY;
+                    if (x >= filas || y >= columnas || mapa[x][y] == 1) {
+                        puedeColocar = false;
+                        break;
+                    }
+                }
+
+                if (puedeColocar) {
+                    for (int j = 0; j < tamanoBarco; j++) {
+                        int x = direccion == 0 ? posX : posX + j;
+                        int y = direccion == 0 ? posY + j : posY;
+                        mapa[x][y] = 1;
+                    }
+                    colocado = true;
+                }
+            }
+        }
+
+        // Juego
+        int disparosRealizados = 0;
+        int barcosRestantes = 0;
+        for (int[] fila : mapa) {
+            for (int celda : fila) {
+                if (celda == 1) barcosRestantes++;
+            }
+        }
+
+        while (barcosRestantes > 0 && disparosRealizados < maxDisparos) {
+            // Imprimir el mapa
+            System.out.println("\nTablero:");
+            for (int i = 0; i < filas; i++) {
+                for (int j = 0; j < columnas; j++) {
+                    if (disparos[i][j]) {
+                        if (mapa[i][j] == 1) {
+                            System.out.print("X  "); // Acierto
+                        } else {
+                            System.out.print("O  "); // Fallo
+                        }
+                    } else {
+                        System.out.print("~  "); // No descubierto
+                    }
+                }
+                System.out.println();
+            }
+
+            // Información del estado
+            System.out.println("Disparos restantes: " + (maxDisparos - disparosRealizados));
+            System.out.println("Barcos restantes: " + barcosRestantes);
+
+            // Pedir disparo
+            System.out.print("Introduce la fila (0 a " + (filas - 1) + "): ");
+            int fila = scanner.nextInt();
+            System.out.print("Introduce la columna (0 a " + (columnas - 1) + "): ");
+            int columna = scanner.nextInt();
+
+            if (fila < 0 || fila >= filas || columna < 0 || columna >= columnas) {
+                System.out.println("Coordenadas fuera del tablero. Intenta de nuevo.");
+                continue;
+            }
+
+            if (disparos[fila][columna]) {
+                System.out.println("Ya disparaste aquí. Intenta de nuevo.");
+                continue;
+            }
+
+            disparos[fila][columna] = true;
+            disparosRealizados++;
+
+            if (mapa[fila][columna] == 1) {
+                System.out.println("¡Has acertado!");
+                mapa[fila][columna] = 0; // Hundir parte del barco
+                barcosRestantes--;
+            } else {
+                System.out.println("¡Has fallado!");
+            }
+        }
+
+        // Resultado final
+        System.out.println("\nTablero final:");
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                if (disparos[i][j]) {
+                    if (mapa[i][j] == 1) {
+                        System.out.print("X  ");
+                    } else {
+                        System.out.print("O  ");
+                    }
+                } else {
+                    System.out.print("~  ");
+                }
+            }
+            System.out.println();
+        }
+
+        if (barcosRestantes == 0) {
+            System.out.println("¡Felicidades! Hundiste todos los barcos.");
+        } else {
+            System.out.println("¡Se acabaron los disparos! Los barcos restantes ganan.");
+        }
+    }
+}
+
