@@ -1,4 +1,5 @@
-import java.util.Scanner; import java.util.Random; //v1
+import java.util.Scanner;
+import java.util.Random;
 
 public class Main { public static void main(String[] args) {
 
@@ -23,77 +24,52 @@ public class Main { public static void main(String[] args) {
 
         //generación de barcos
         int direccion_barco_x = 0;
-        int direccion_barco_y = 0;
+
+        int posi_x = random.nextInt(0, filas-1);
+        int posi_y = random.nextInt(0, columnas-1);
+
+        int espacio = mapa.length;
+
+        int num_barco = 1;
+
+        int posi = 1;
 
         for (int i = 0; i < barcos; i++) {
-            int mitad_tablero = (filas/2);
-            int x_o_y = random.nextInt(0,1); // 0 es horizontal 1 es vertical
-            direccion_barco_x = random.nextInt(0,1);
-            direccion_barco_y = random.nextInt(0,1);
-            int posi_x = random.nextInt(0, filas);
-            int posi_y = random.nextInt(0, filas);
-            mapa[posi_x][posi_y] = 1;
-
-            // 0 izquierda, 1 derecha
-            if(posi_x > mitad_tablero){
-                direccion_barco_x = 0;
-            } else if (posi_y > mitad_tablero) {
-                direccion_barco_y = 0;
-            } else if (posi_x < mitad_tablero) {
-                direccion_barco_x = 1;
-            } else if (posi_y < mitad_tablero) {
-                direccion_barco_y = 1;
-            } else{
-                direccion_barco_x = 1;
-                direccion_barco_y = 1;
-            }
-            int size_barco = random.nextInt(1, mitad_tablero);
-
-            for (int j = 0; j < size_barco; j++) {
-                int cont_x = 1;
-                int cont_y = 1;
-                if (direccion_barco_x == 0){
-                    cont_x = -1;
-                    if (x_o_y == 0){
-                        mapa[posi_x][posi_y + cont_y] = 1;
-                        cont_y--;
-                    } else{
-                        mapa[posi_x + cont_x][posi_y] = 1;
-                        cont_x--;
-                    }
-                } else if (direccion_barco_x == 1) {
-                    cont_x = 1;
-                    if (x_o_y == 0){
-                        mapa[posi_x][posi_y + cont_y] = 1;
-                        cont_y++;
-                    } else{
-                        mapa[posi_x + cont_x][posi_y] = 1;
-                        cont_x++;
-                    }
-                } else if (direccion_barco_y == 0){
-                    cont_y = -1;
-                    if (x_o_y == 0){
-                        mapa[posi_x][posi_y + cont_y] = 1;
-                        cont_y--;
-                    } else{
-                        mapa[posi_x + cont_x][posi_y] = 1;
-                        cont_x--;
-                    }
+            if (posi == 0){
+                int size_barco = random.nextInt(1, filas);
+                posi_y = random.nextInt(0, filas-1);
+                if (espacio <= (posi_x + size_barco) && (mapa[posi_y][posi_x] == 0)){
+                    posi_x = random.nextInt(0, columnas);
+                    posi_y = random.nextInt(0, filas);
+                    i--;
                 } else{
-                    cont_y = 1;
-                    if (x_o_y == 0){
-                        mapa[posi_x][posi_y + cont_y] = 1;
-                        cont_y--;
-                    } else{
-                        mapa[posi_x + cont_x][posi_y] = 1;
-                        cont_x--;
+                    for (int j = 0; j < size_barco; j++) {
+                        mapa[posi_y][posi_x] = num_barco;
+                        posi_x++;
                     }
+                    num_barco++;
+                }
+            }else{
+                int size_barco = random.nextInt(1, columnas);
+                posi_x = random.nextInt(0, columnas-1);
+                if (espacio <= (posi_y + size_barco) && mapa[posi_y][posi_x] == 0){
+                    posi_x = random.nextInt(0, columnas-1);
+                    posi_y = random.nextInt(0, filas-1);
+                    i--;
+                } else{
+                    for (int j = 0; j < size_barco; j++) {
+                        mapa[posi_y][posi_x] = num_barco;
+                        posi_y++;
+                    }
+                    num_barco++;
                 }
             }
+
         }
+
         for (int i = 0; i < mapa.length; i++) {
             for (int j = 0; j < mapa[i].length; j++) {
-                System.out.print(mapa[i][j] + "  ");
+                System.out.printf("%2s ", mapa[i][j]);
             }
             System.out.println();
         }
