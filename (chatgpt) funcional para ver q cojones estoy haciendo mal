@@ -1,0 +1,156 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+
+        System.out.println("Selecciona el tamaño del mapa (ejemplo: 10 10 para un tablero de 10x10)");
+
+        System.out.println("Columnas:");
+        int columnas = scanner.nextInt();
+
+        System.out.println("Filas:");
+        int filas = scanner.nextInt();
+
+        int[][] mapa = new int[filas][columnas];
+
+        System.out.println("Indica cuántos barcos quieres tener:");
+        int barcos = scanner.nextInt();
+
+        System.out.println("Indica el número de disparos:");
+        int disparos = scanner.nextInt();
+
+        // Array para almacenar el tamaño de cada barco
+        int[] tamaño = new int[barcos];
+
+        // Generación de barcos
+        for (int num_barco = 1; num_barco <= barcos; num_barco++) {
+            boolean barcoColocado = false;
+
+            while (!barcoColocado) {
+                int orientacion = random.nextInt(2); // 0 = horizontal, 1 = vertical
+                int posX = random.nextInt(filas);
+                int posY = random.nextInt(columnas);
+                int tamañoBarco = random.nextInt(1, Math.min(filas, columnas) / 2) + 1;
+
+                if (orientacion == 0) { // Horizontal
+                    if (posY + tamañoBarco <= columnas && espacioDisponible(mapa, posX, posY, tamañoBarco, orientacion)) {
+                        for (int j = 0; j < tamañoBarco; j++) {
+                            mapa[posX][posY + j] = num_barco;
+                        }
+                        tamaño[num_barco - 1] = tamañoBarco;
+                        barcoColocado = true;
+                    }
+                } else { // Vertical
+                    if (posX + tamañoBarco <= filas && espacioDisponible(mapa, posX, posY, tamañoBarco, orientacion)) {
+                        for (int j = 0; j < tamañoBarco; j++) {
+                            mapa[posX + j][posY] = num_barco;
+                        }
+                        tamaño[num_barco - 1] = tamañoBarco;
+                        barcoColocado = true;
+                    }
+                }
+            }
+        }
+
+        // Mostrar el mapa oculto (para depuración)
+        System.out.println("\nMapa con barcos:");
+        imprimirMapaNumerico(mapa);
+
+        // Inicializar el mapa visible
+        String[][] mapaVisible = new String[filas][columnas];
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                mapaVisible[i][j] = "*";
+            }
+        }
+
+        // Lógica de disparos
+        int barcosRestantes = barcos;
+        int[] impactosPorBarco = new int[barcos];
+
+        for (int turno = 1; turno <= disparos && barcosRestantes > 0; turno++) {
+            System.out.println("\nTurno " + turno + " - Barcos restantes: " + barcosRestantes);
+            imprimirMapaVisible(mapaVisible);
+
+            System.out.println("Selecciona una posición para tu disparo (ej. 5 5):");
+            int disparoX = scanner.nextInt() - 1;
+            int disparoY = scanner.nextInt() - 1;
+
+            if (disparoX < 0 || disparoX >= filas || disparoY < 0 || disparoY >= columnas) {
+                System.out.println("Disparo fuera de los límites. Intenta de nuevo.");
+                turno--; // No contar turno inválido
+                continue;
+            }
+
+            if (mapaVisible[disparoX][disparoY].equals("X") || mapaVisible[disparoX][disparoY].equals("~")) {
+                System.out.println("Ya disparaste en esta posición. Intenta de nuevo.");
+                turno--; // No contar turno inválido
+                continue;
+            }
+
+            if (mapa[disparoX][disparoY] != 0) {
+                int barcoImpactado = mapa[disparoX][disparoY];
+                impactosPorBarco[barcoImpactado - 1]++;
+                mapaVisible[disparoX][disparoY] = "X";
+
+                System.out.println("¡Impacto al barco " + barcoImpactado + "!");
+                if (impactosPorBarco[barcoImpactado - 1] == tamaño[barcoImpactado - 1]) {
+                    System.out.println("¡Barco " + barcoImpactado + " hundido!");
+                    barcosRestantes--;
+                }
+            } else {
+                mapaVisible[disparoX][disparoY] = "~";
+                System.out.println("Agua.");
+            }
+        }
+
+        if (barcosRestantes == 0) {
+            System.out.println("\n¡Felicidades! Hundiste todos los barcos.");
+        } else {
+            System.out.println("\nJuego terminado. Barcos restantes: " + barcosRestantes);
+        }
+
+        scanner.close();
+    }
+
+    // Función para comprobar si hay espacio disponible para colocar un barco
+    private static boolean espacioDisponible(int[][] mapa, int x, int y, int tamaño, int orientacion) {
+        if (orientacion == 0) { // Horizontal
+            for (int j = 0; j < tamaño; j++) {
+                if (mapa[x][y + j] != 0) {
+                    return false;
+                }
+            }
+        } else { // Vertical
+            for (int j = 0; j < tamaño; j++) {
+                if (mapa[x + j][y] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Función para imprimir el mapa oculto (solo para depuración)
+    private static void imprimirMapaNumerico(int[][] mapa) {
+        for (int[] fila : mapa) {
+            for (int celda : fila) {
+                System.out.printf("%2d ", celda);
+            }
+            System.out.println();
+        }
+    }
+
+    // Función para imprimir el mapa visible
+    private static void imprimirMapaVisible(String[][] mapaVisible) {
+        for (String[] fila : mapaVisible) {
+            for (String celda : fila) {
+                System.out.printf("%2s ", celda);
+            }
+            System.out.println();
+        }
+    }
+}
