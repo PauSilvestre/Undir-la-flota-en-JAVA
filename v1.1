@@ -1,0 +1,139 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class Main { public static void main(String[] args) {
+
+    Scanner scanner = new Scanner(System.in);
+    Random random = new Random();
+
+        System.out.println("Selecciona el tamaño del mapa (ejemplo: 10 10 para un tablero de 10x10)");
+
+        System.out.println("Columnas:");
+        int columnas = scanner.nextInt();
+
+        System.out.println("Filas:");
+        int filas = scanner.nextInt();
+
+        int[][] mapa = new int[columnas][filas];
+
+        System.out.println("Indica cuantos bárcos quieres tener");
+        int barcos = (scanner.nextInt() + 1);
+
+        System.out.println("Indica el número de disparos");
+        int disparos = scanner.nextInt();
+
+        //generación de barcos
+        int direccion_barco_x = 0;
+
+        int x = filas - 1;
+        int y = columnas - 1;
+
+        int posi_x = random.nextInt(0, x);
+        int posi_y = random.nextInt(0, y);
+
+
+        int espacio = mapa.length;
+
+        int num_barco = 1;
+
+        int posi = 1;
+
+        int[] tamaño = new int[barcos];
+        int contador_tamaños = 0;
+
+        for (int i = 0; i < barcos; i++) {
+            posi = random.nextInt(0, 2);
+            if (posi == 0){
+                int size_barco_x = random.nextInt(2, filas/2);
+                posi_y = random.nextInt(0, filas-1);
+                if (espacio <= (posi_x + size_barco_x) && (mapa[posi_y][posi_x] == 0)){
+                    posi_x = random.nextInt(0, columnas);
+                    posi_y = random.nextInt(0, filas);
+                    i--;
+                } else{
+                    for (int j = 0; j < size_barco_x; j++) {
+                        if (mapa[posi_y][posi_x] == 0){
+                            mapa[posi_y][posi_x] = num_barco;
+                            posi_x++;
+                            tamaño[contador_tamaños]++;
+                        }else{
+                            if (j < 1){
+                                i--;
+                                num_barco--;
+                                contador_tamaños--;
+                                break;
+                            } else {
+                                mapa[posi_y][posi_x] = mapa[posi_y][posi_x];
+                                break;
+                            }
+                        }
+
+                    }
+                    contador_tamaños++;
+                    num_barco++;
+                }
+            }else{
+                int size_barco_y = random.nextInt(2, columnas/2);
+                posi_x = random.nextInt(0, columnas-1);
+                if (espacio <= (posi_y + size_barco_y) && mapa[posi_y][posi_x] == 0){
+                    posi_x = random.nextInt(0, columnas-1);
+                    posi_y = random.nextInt(0, filas-1);
+                    i--;
+                } else{
+                    for (int j = 0; j < size_barco_y; j++) {
+                        if (mapa[posi_y][posi_x] == 0){
+                            mapa[posi_y][posi_x] = num_barco;
+                            posi_y++;
+                            tamaño[contador_tamaños]++;
+                        }else{
+                            if (j < 1){
+                                i--;
+                                num_barco--;
+                                contador_tamaños--;
+                                break;
+                            } else {
+                                mapa[posi_y][posi_x] = mapa[posi_y][posi_x];
+                                break;
+                            }
+                        }
+
+                    }
+                    contador_tamaños++;
+                    num_barco++;
+                }
+            }
+
+        }
+
+        int[][] mapa_visible = new int[columnas][filas];
+
+        int cont_barcos = 1;
+
+        for (int i = 1; i < tamaño.length; i++) {
+            System.out.println("Barco " + cont_barcos + "  0/" + tamaño[i]);
+            cont_barcos++;
+        }
+
+        for (int i = 0; i < mapa_visible.length; i++) {
+            System.out.println();
+            for (int j = 0; j < mapa_visible[i].length; j++) {
+                System.out.printf("%2s ", "*");
+            }
+        }
+
+        System.out.println();
+
+        for (int i = 0; i < mapa_visible.length; i++) {
+            System.out.println();
+            for (int j = 0; j < mapa_visible[i].length; j++) {
+                System.out.printf("%2s ", mapa[i][j]);
+            }
+        }
+
+        for (int i = 0; i < mapa.length; i++) {
+            for (int j = 0; j < mapa[i].length; j++) {
+
+            }
+        }
+    }
+}
